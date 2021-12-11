@@ -55,7 +55,7 @@ class JDMemberCloseAccount(object):
     京东全自动退店铺会员
     """
 
-    def __init__(self):
+    def __init__(self, port = 5201):
         INFO("欢迎执行JD全自动退会程序，如有使用问题请加TG群https://t.me/jdMemberCloseAccount进行讨论")
         INFO("↓  " * 30)
 
@@ -85,12 +85,12 @@ class JDMemberCloseAccount(object):
         if not self.sms_captcha_cfg["is_ocr"]:
             if not self.sms_captcha_cfg["jd_wstool"]:
                 from utils.listener import SmsSocket
-                self.sms = SmsSocket()
+                self.sms = SmsSocket(port)
         elif self.sms_captcha_cfg["is_ocr"]:
             self.ocr_type = self.ocr_cfg["type"]
             if self.ocr_type == "":
                 WARN("当前已开启OCR模式，但是并未选择OCR类型，请在config.yaml补充ocr.type")
-                sys.exit(1)
+                return
             if self.ocr_type == "baidu":
                 from captcha.baidu_ocr import BaiduOCR
                 self.baidu_ocr = BaiduOCR(self.ocr_cfg, self.debug)
@@ -117,7 +117,7 @@ class JDMemberCloseAccount(object):
             self.JDyolo = JDyolocaptcha(self.image_captcha_cfg)
         else:
             WARN("请在config.yaml中补充image_captcha.type")
-            sys.exit(1)
+            return
 
         # 初始化店铺变量
         # 错误店铺页面数量
@@ -227,7 +227,7 @@ class JDMemberCloseAccount(object):
                 if ret["code"] == "0":
                     if ret["message"] == "用户未登录":
                         WARN("config.yaml中的cookie值有误，请确保pt_key和pt_pin都存在，如都存在请检查cookie是否失效")
-                        sys.exit(1)
+                        return
                     elif ret["message"] == "响应成功":
                         if len(ret["result"]["cardList"]) == 0:
                             break
@@ -336,7 +336,7 @@ class JDMemberCloseAccount(object):
         if self.sms_captcha_cfg["is_ocr"]:
             if len(self.ocr_cfg["ocr_range"]) != 4:
                 WARN("请在config.yaml中配置 ocr_range")
-                sys.exit(1)
+                return
             else:
                 _range = (self.ocr_cfg["ocr_range"])
                 ocr_delay_time = self.ocr_cfg["ocr_delay_time"]
@@ -371,10 +371,11 @@ class JDMemberCloseAccount(object):
                 INFO("验证码监听结果为：", sms_code)
             except OSError:
                 WARN("WebSocket监听时发生了问题，请检查是否开启外部jd_wstool工具或者使用内置的jd_wstool或者5201端口是否开放")
-                sys.exit(1)
+                self.browser.close()
+                return
             except Exception as e:
                 WARN(e.__class__, e.args)
-                sys.exit(1)
+                return
 
         # 输入短信验证码
         self.wait.until(EC.presence_of_element_located(
@@ -559,7 +560,8 @@ class JDMemberCloseAccount(object):
         # 检查Cookie配置
         if self.config["cookie"] == "":
             WARN("请先在 config.yaml 里配置好cookie")
-            sys.exit(1)
+            self.browser.close()
+            return
 
         # 写入Cookie
         self.browser.delete_all_cookies()
@@ -584,19 +586,21 @@ class JDMemberCloseAccount(object):
             # 执行一遍刷新接口
             self.refresh_cache()
 
-            state, card_list = self.get_cloud_shop_ids()
+            state  = True #, card_list = self.get_cloud_shop_ids()
             if state:
                 # 获取店铺列表
                 card_list = self.get_shop_cards()
 
             if len(card_list) == 0:
                 INFO("🎉 本次运行获取到的店铺数为0个，判断为没有需要注销的店铺，即将退出程序")
-                sys.exit(0)
+                self.browser.close()
+                return
 
             # 如果剩下的卡包
             if len(self.shop_cfg["specify_shops"]) > 0 and len(self.specify_shops) == 0:
                 INFO("👋 指定店铺已全部注销完毕，程序即将退出")
-                sys.exit(0)
+                self.browser.close()
+                return
 
             # 如果剩下的卡包全部都是黑名单中的，直接就结束
             # 每次比较新一轮的数量对比上一轮，即新的列表集合是否是旧的子集
@@ -606,7 +610,8 @@ class JDMemberCloseAccount(object):
                 INFO("芜湖，剩下的店铺全部都在程序黑名单中")
                 INFO("本次运行记录的黑名单店铺名字为", self.need_skip_shops)
                 INFO("🤔 剩下的店铺都是疑难杂症，请配置到黑名单中或联系客服解决，程序即将退出")
-                sys.exit(0)
+                self.browser.close()
+                return
 
             # 如果乱码的有，先乱码等待
             if self.wrong_store_page_count > 0:
@@ -645,7 +650,8 @@ class JDMemberCloseAccount(object):
                 # 判断本次运行数是否达到设置
                 if self.member_close_max_number != 0 and self.member_close_count >= self.member_close_max_number:
                     INFO("已注销店铺数达到配置中允许注销的最大次数，程序退出")
-                    sys.exit(0)
+                    self.browser.close()
+                    return
 
                 # 非指定店铺名字跳过
                 if len(self.shop_cfg["specify_shops"]) > 0:
