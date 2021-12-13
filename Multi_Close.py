@@ -217,7 +217,6 @@ def wskeyrun(i = 0):
     #         return
 
     multi_enable = get_config()["multi"]["multi"]
-    wskeystring = get_config()["multi"]["wskey"]
 
     boom()
     sv, st, uuid, sign = get_sign()
@@ -226,7 +225,18 @@ def wskeyrun(i = 0):
         JDMemberCloseAccount().main()
         return
 
-    wskeylist, portlist = loadWskeyConfig(wskeystring)
+    #wskeystring = get_config()["multi"]["wskey"]
+    #wskeylist, portlist = loadWskeyConfig(wskeystring)
+    wskeylist = []
+    portlist = []
+    for i in range(100):
+        try:
+            wskeylist.append(get_config()["multi"]["wskey" + str(i + 1)])
+            portlist.append(get_config()["multi"]["port" + str(i + 1)])
+        except:
+            pass
+
+
 
     for i in range(len(portlist)):
         threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i])).start()

@@ -4,12 +4,11 @@ debug: false
 
 # 多账号同退相关
 # multi.multi: 多账号同退开关
-# multi.wskey: wskey列表组，多个同时跑就用@隔开，格式为：    WK1&WK2|PORT1@WK3|PORT2
-#                           填写说明：1、端口不可重复，一个端口开一个浏览器
-#                                     2、支持同一个端口按顺序退会多个账号，即双卡手机的使用场景
+# multi.wskeyX: wskey列表组，多个账号使用单个端口的&隔开
+# multi.portX: 对应wskeyX试用的端口号，
 multi:
     multi: false
-    wskey: ""
+    wskey1: "pin=xxxx;wskey=xxxx"
 
 # selenium 相关
 # selenium.browserType: 浏览器类型
