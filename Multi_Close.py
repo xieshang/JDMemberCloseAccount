@@ -195,15 +195,23 @@ def loadWskeyConfig(wsk_config):
     return wskeylist, portlist
 
 
-def runByPort(wskeylist, port):
-    wskeys = wskeylist.split("&")
-    for key in wskeys:
-        wspin = key.split(";")[0]
-        print("转化wskey:" + wspin + "\n")
-        return_ws = getToken(key)
-        if return_ws[0]:
-            changeck(return_ws[1])
+def runByPort(keylist, port, multitype):
+    keys = keylist.split("&")
+    for key in keys:
+        pin = key.split(";")[0]
+        if multitype == "wskey":
+            print("转化wskey:" + pin + "\n")
+            return_ws = getToken(key)
+            if return_ws[0]:
+                changeck(return_ws[1])
+                JDMemberCloseAccount(int(port)).main()
+            else:
+                print("wskey转cookie失败")
+        elif multitype == "cookie":
+            changeck(key)
             JDMemberCloseAccount(int(port)).main()
+        else:
+            print("请确认[multi.type]配置是否正确")
 
 
 
@@ -217,6 +225,7 @@ def wskeyrun(i = 0):
     #         return
 
     multi_enable = get_config()["multi"]["multi"]
+    multi_type = get_config()["multi"]["type"]
 
     boom()
     sv, st, uuid, sign = get_sign()
@@ -225,13 +234,11 @@ def wskeyrun(i = 0):
         JDMemberCloseAccount().main()
         return
 
-    #wskeystring = get_config()["multi"]["wskey"]
-    #wskeylist, portlist = loadWskeyConfig(wskeystring)
     wskeylist = []
     portlist = []
     for i in range(100):
         try:
-            wskeylist.append(get_config()["multi"]["wskey" + str(i + 1)])
+            wskeylist.append(get_config()["multi"]["key" + str(i + 1)])
             portlist.append(get_config()["multi"]["port" + str(i + 1)])
         except:
             pass
@@ -239,7 +246,7 @@ def wskeyrun(i = 0):
 
 
     for i in range(len(portlist)):
-        threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i])).start()
+        threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i], multi_type)).start()
         time.sleep(len(wskeylist[i].split("&")) * 3) # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 
 
