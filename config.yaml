@@ -4,11 +4,17 @@ debug: false
 
 # 多账号同退相关
 # multi.multi: 多账号同退开关
-# multi.wskeyX: wskey列表组，多个账号使用单个端口的&隔开
-# multi.portX: 对应wskeyX试用的端口号，
+# multi.type: 账号的类型，是"cookie"还是"wskey"，请对应设置即可
+# multi.keyX: 一个key参数对应一个port参数，若multi.type设置为"cookie"，请填写cookie；若设置为"wskey"，请填写wskey；
+#             一个端口对应多个账号请使用&隔开： [wsk1]&[wsk2]&[wsk3]
+# multi.portX: 对应wskeyX或cookieX使用的端口号，
 multi:
     multi: false
-    wskey1: "pin=xxxx;wskey=xxxx"
+    type: "wskey"
+    key1: ""
+    port1: 5211
+    key2: ""
+    port2: 5212
 
 # selenium 相关
 # selenium.browserType: 浏览器类型
