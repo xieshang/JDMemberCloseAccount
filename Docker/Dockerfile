@@ -38,6 +38,7 @@ RUN set -x \
 	&& cd JDMemberCloseAccount \
 	&& sed -i 's!headless: false!headless: true!g' ./config.yaml \
 	&& sed -i 's!binary: ""!binary: "/bin/google-chrome"!g' ./config.yaml \
+	&& sed -i 's!type: "yolov4"!type: "local"!g' ./config.yaml \
 	&& cd Docker \
 	&& yum -y install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
 	&& cp chromedriver ../drivers/chromedriver \
