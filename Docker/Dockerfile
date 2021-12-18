@@ -35,7 +35,10 @@ RUN set -x \
 	&& pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple selenium psutil func_timeout requests urllib3 pillow websockets numpy pyyaml opencv-python schedule\
 	&& cd /home/ \
 	&& git clone https://gitee.com/xxsc/JDMemberCloseAccount.git \
-	&& cd JDMemberCloseAccount
-#ENTRYPOINT ["./docker/docker-entrypoint.sh"]
-	
+	&& cd JDMemberCloseAccount \
+	&& sed -i 's!headless: false!headless: true!g' ./config.yaml \
+	&& sed -i 's!binary: ""!binary: "/bin/google-chrome"!g' ./config.yaml \
+	&& cd driver \
+	&& yum -y install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
+	&& cp ./chromedriver ../driver/chromedriver	
 	
