@@ -262,11 +262,12 @@ def wskeyrun(i = 0):
 
     if (platform.system() == 'Windows'):
         print('Windows系统')
-    elseif(platform.system() == 'Linux'):
-        print('Linux系统')
-        runcmdlinux("mykill chrome")
     else:
-        print('其他')
+        if(platform.system() == 'Linux'):
+            print('Linux系统')
+            runcmdlinux("mykill chrome")
+        else:
+            print('其他')
 
 
 
@@ -276,7 +277,7 @@ if __name__ == '__main__':
     print("\n开启自动退会功能\n")
 
     # 是否立即执行
-    #wskeyrun(1)
+    wskeyrun(1)
 
 
     try:
