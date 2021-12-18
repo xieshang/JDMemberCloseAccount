@@ -383,6 +383,7 @@ class JDMemberCloseAccount(object):
 
                 if recv == "":
                     INFO("等待websocket推送短信验证码超时，即将跳过", card["brandName"])
+                    record_black_list(card)
                     return False
                 else:
                     sms_code = json.loads(recv)["sms_code"]
