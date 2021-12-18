@@ -277,7 +277,7 @@ if __name__ == '__main__':
     print("\n开启自动退会功能\n")
 
     # 是否立即执行
-    wskeyrun(1)
+    #wskeyrun(1)
 
 
     try:
