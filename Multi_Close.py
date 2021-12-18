@@ -213,7 +213,13 @@ def runByPort(keylist, port, multitype):
         else:
             print("请确认[multi.type]配置是否正确")
 
-
+def runcmdlinux(cmd):
+    import commands
+    user_str = commands.getoutput(cmd)
+    user_list = user_str.splitlines()  # 列表形式分隔文件内容(默认按行分隔)
+    for i in user_list:
+        u_info = i.split(':')
+        print("username is {} uid is ".format(u_info[0], u_info[2]))
 
 def wskeyrun(i = 0):
     global sv, st, uuid, sign
@@ -249,6 +255,19 @@ def wskeyrun(i = 0):
         threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i], multi_type)).start()
         time.sleep(len(wskeylist[i].split("&")) * 3) # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 
+    time.sleep(60*60*3)
+
+    import platform
+    print(platform.system())
+
+    if (platform.system() == 'Windows'):
+        print('Windows系统')
+    elseif(platform.system() == 'Linux'):
+        print('Linux系统')
+        runcmdlinux("mykill chrome")
+    else:
+        print('其他')
+
 
 
 if __name__ == '__main__':
@@ -257,7 +276,7 @@ if __name__ == '__main__':
     print("\n开启自动退会功能\n")
 
     # 是否立即执行
-    wskeyrun(1)
+    #wskeyrun(1)
 
 
     try:
