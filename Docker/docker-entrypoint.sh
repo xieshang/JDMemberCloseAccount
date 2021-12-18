@@ -7,7 +7,7 @@
 #echo "gpgcheck=0" >> /etc/yum.repos.d/google.repo
 #echo "gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub" >> /etc/yum.repos.d/google.repo
 
-yum -y install 
+
 cd /home/JDMemberCloseAccount/driver
 yum -y install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 cp ./chromedriver ../driver/chromedriver
