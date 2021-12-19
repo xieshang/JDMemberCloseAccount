@@ -287,8 +287,14 @@ if __name__ == '__main__':
     except:
         pass
 
+    from apscheduler.schedulers.blocking import BlockingScheduler
 
-    schedule.every().day.at('10:00').do(wskeyrun)
-    while True:
-        schedule.run_pending()
+    scheduler = BlockingScheduler(timezone='Asia/Shanghai')
+    scheduler.add_job(wskeyrun, "cron", hour = 10, minute = 16)
+    scheduler.start()
+
+
+   # pass schedule.every().day.at('10:00').do(wskeyrun)
+   #  while True:
+   #      schedule.run_pending()
 
