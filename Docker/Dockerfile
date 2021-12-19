@@ -36,6 +36,8 @@ RUN set -x \
 	&& cd /home/ \
 	&& git clone https://gitee.com/xxsc/JDMemberCloseAccount.git \
 	&& cd JDMemberCloseAccount \
+	&& chmod +x mykill.sh \
+	&& ln -sf /home/JDMemberCloseAccount/mykill.sh /bin/mykill \
 	&& sed -i 's!headless: false!headless: true!g' ./config.yaml \
 	&& sed -i 's!binary: ""!binary: "/bin/google-chrome"!g' ./config.yaml \
 	&& sed -i 's!type: "yolov4"!type: "local"!g' ./config.yaml \

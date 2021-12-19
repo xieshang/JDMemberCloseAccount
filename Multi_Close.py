@@ -250,12 +250,22 @@ def wskeyrun(i = 0):
             pass
 
 
-
+    threadlist = []
     for i in range(len(portlist)):
-        threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i], multi_type)).start()
-        time.sleep(len(wskeylist[i].split("&")) * 3) # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
+        threadlist.append(threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i], multi_type)))
+        threadlist[len(threadlist) - 1].start()
+        time.sleep(10) # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 
-    time.sleep(60*60*3)
+    while True:
+        threadislive = 0
+        for i in range(len(threadlist)):
+            if threadlist[i].isAlive():
+                threadislive += 1
+                time.sleep(10)
+                break
+        if threadislive == 0:
+            break
+
 
     import platform
     print(platform.system())
@@ -276,25 +286,16 @@ if __name__ == '__main__':
 
     print("\n开启自动退会功能\n")
 
-    # 是否立即执行
-    #wskeyrun(1)
+    # 启动一次立即执行
+    wskeyrun(1)
 
-
-    try:
-        if sys.argv[1]:
-            print("强制执行一次")
-            wskeyrun(1)
-    except:
-        pass
-
-    from apscheduler.schedulers.blocking import BlockingScheduler
-
-    scheduler = BlockingScheduler(timezone='Asia/Shanghai')
-    scheduler.add_job(wskeyrun, "cron", hour = 10, minute = 16)
-    scheduler.start()
-
-
-   # pass schedule.every().day.at('10:00').do(wskeyrun)
-   #  while True:
-   #      schedule.run_pending()
-
+    # 定时自动退会相关
+    if get_config()["cron"]["auto"]:
+        cron = get_config()["cron"]["cron"]
+        if len(cron.split(" ")) != 5:
+            print("cron.cron 定时设置错误，必须为5位")
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.triggers.cron import CronTrigger
+        scheduler = BlockingScheduler(timezone='Asia/Shanghai')
+        scheduler.add_job(wskeyrun, CronTrigger.from_crontab(cron))
+        scheduler.start()
