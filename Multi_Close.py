@@ -3,7 +3,7 @@
 cron: 15 2 * * * wskey.py
 new Env('wskey转换');
 '''
-
+import platform
 import asyncio,time,threading
 import socket
 import base64
