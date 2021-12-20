@@ -584,6 +584,17 @@ class JDMemberCloseAccount(object):
             self.browser.close()
             return
 
+
+        ck = str(self.config["cookie"]).split(";")
+        self.pinname = ''
+        for item in ck:
+            if "pin" in item:
+                self.pinname = item.split("=")[1]
+        if '%' in self.pinname:
+            import urllib.parse
+            self.pinname = urllib.parse.unquote(self.pinname)
+
+
         # 写入Cookie
         self.browser.delete_all_cookies()
         for cookie in self.config['cookie'].split(";", 1):
