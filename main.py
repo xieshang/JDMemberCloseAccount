@@ -36,17 +36,20 @@ async def ws_conn(ws_conn_url, ws_timeout):
 
 
 logger = Log().logger
-
+pinname = ''
 
 def INFO(*args):
+    args = pinname + args
     logger.info(" ".join(map(str, args)))
 
 
 def WARN(*args):
+    args = pinname + args
     logger.warning(" ".join(map(str, args)))
 
 
 def ERROR(*args):
+    args = pinname + args
     logger.error(" ".join(map(str, args)))
 
 
@@ -586,13 +589,13 @@ class JDMemberCloseAccount(object):
 
 
         ck = str(self.config["cookie"]).split(";")
-        self.pinname = ''
+        global pinname
         for item in ck:
             if "pin" in item:
-                self.pinname = item.split("=")[1]
-        if '%' in self.pinname:
+                pinname = item.split("=")[1]
+        if '%' in pinname:
             import urllib.parse
-            self.pinname = urllib.parse.unquote(self.pinname)
+            pinname = urllib.parse.unquote(pinname)
 
 
         # 写入Cookie
