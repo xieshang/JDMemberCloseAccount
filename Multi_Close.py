@@ -206,12 +206,12 @@ def runByPort(keylist, port, multitype):
             return_ws = getToken(key)
             if return_ws[0]:
                 changeck(return_ws[1], port)
-                JDMemberCloseAccount(int(port)).main()
+                JDMemberCloseAccount().main()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
             changeck(key, port)
-            JDMemberCloseAccount(int(port)).main()
+            JDMemberCloseAccount().main()
             runmain()
         else:
             print("请确认[multi.type]配置是否正确")
@@ -245,11 +245,6 @@ def closeallchrome():
 def wskeyrun(i = 0):
     global sv, st, uuid, sign
 
-
-    # if i == 0:
-    #     timenow = time.localtime()
-    #     if timenow.tm_mday not in [1,6,11,16,21,26]:
-    #         return
 
     multi_enable = get_config()["multi"]["multi"]
     multi_type = get_config()["multi"]["type"]
