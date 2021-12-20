@@ -85,7 +85,7 @@ class JDMemberCloseAccount(object):
         if not self.sms_captcha_cfg["is_ocr"]:
             if not self.sms_captcha_cfg["jd_wstool"]:
                 from utils.listener import SmsSocket
-                self.sms = SmsSocket(get_config()["main"]["smsport"])
+                self.sms = SmsSocket(int(get_config()["main"]["smsport"]))
         elif self.sms_captcha_cfg["is_ocr"]:
             self.ocr_type = self.ocr_cfg["type"]
             if self.ocr_type == "":
