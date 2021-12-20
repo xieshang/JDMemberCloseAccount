@@ -18,7 +18,6 @@ import logging
 import time
 from utils.config import get_config
 
-import schedule
 from main import JDMemberCloseAccount
 
 
@@ -207,13 +206,12 @@ def runByPort(keylist, port, multitype):
             return_ws = getToken(key)
             if return_ws[0]:
                 changeck(return_ws[1], port)
-                #JDMemberCloseAccount(int(port)).main()
-                runmain()
+                JDMemberCloseAccount(int(port)).main()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
             changeck(key, port)
-            #JDMemberCloseAccount(int(port)).main()
+            JDMemberCloseAccount(int(port)).main()
             runmain()
         else:
             print("请确认[multi.type]配置是否正确")
@@ -240,24 +238,6 @@ def closeallchrome():
     else:
         if(systype == 'Linux'):
             runcmdlinux("mykill chrome")
-        else:
-            print('其他')
-
-
-def runmain():
-    global systype
-    import subprocess
-
-    fpath = os.path.split(__file__)[0]
-    child = subprocess.Popen("python3 " + fpath + "/main.py")
-    child.wait()
-    return
-
-    if (systype == 'Windows'):
-        os.system("python3 main.py")
-    else:
-        if(systype == 'Linux'):
-            runcmdlinux("python3 main.py")
         else:
             print('其他')
 
