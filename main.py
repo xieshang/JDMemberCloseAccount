@@ -39,15 +39,15 @@ logger = Log().logger
 pinname = ''
 
 def INFO(*args):
-    logger.info(" ".join(pinname + ">>" + str(*args)))
+    logger.info("".join(pinname + ">>" + list(map(str, args))[0]))
 
 
 def WARN(*args):
-    logger.warning(" ".join(pinname + ">>" + str(*args)))
+    logger.warning("".join(pinname + ">>" + list(map(str, args))[0]))
 
 
 def ERROR(*args):
-    logger.error(" ".join(pinname + ">>" + str(*args)))
+    logger.error("".join(pinname + ">>" + list(map(str, args))[0]))
 
 
 class JDMemberCloseAccount(object):
