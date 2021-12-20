@@ -44,13 +44,22 @@ class JDMemberCloseAccount(object):
     """
 
     def INFO(self, *args):
-        logger.info("".join(self.pinname + " >> " + list(map(str, args))[0]))
+        s = ''
+        for item in list(map(str, args)):
+            s += item
+        logger.info("".join(self.pinname + " >> " + s))
 
     def WARN(self, *args):
-        logger.warning("".join(self.pinname + " >> " + list(map(str, args))[0]))
+        s = ''
+        for item in list(map(str, args)):
+            s += item
+        logger.warning("".join(self.pinname + " >> " + s))
 
     def ERROR(self, *args):
-        logger.error("".join(self.pinname + " >> " + list(map(str, args))[0]))
+        s = ''
+        for item in list(map(str, args)):
+            s += item
+        logger.error("".join(self.pinname + " >> " + s))
 
     def __init__(self):
         self.pinname = ''
