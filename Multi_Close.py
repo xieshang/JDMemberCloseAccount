@@ -12,6 +12,7 @@ import json
 import os
 import sys
 import requests
+import platform
 
 import logging
 import time
@@ -168,13 +169,15 @@ def appjmp(wskey, tokenKey):
         return True, jd_ck
 
 
-def changeck(ck):
+def changeck(ck, port):
     with open("./config.yaml","r",encoding='UTF-8') as f:
 
         res_str = ''
         for line in f.readlines():
             if 'cookie:' in line:
                 line = 'cookie: "' + ck + '"\n'
+            if 'smsport' in line:
+                line = line.split('"')[0] + '"' + str(port) + '"' + line.split('"')[2]
             res_str += line
 
     f = open("./config.yaml","w",encoding='UTF-8')
@@ -203,13 +206,15 @@ def runByPort(keylist, port, multitype):
             print("转化wskey:" + pin + "\n")
             return_ws = getToken(key)
             if return_ws[0]:
-                changeck(return_ws[1])
-                JDMemberCloseAccount(int(port)).main()
+                changeck(return_ws[1], port)
+                #JDMemberCloseAccount(int(port)).main()
+                runmain()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
-            changeck(key)
-            JDMemberCloseAccount(int(port)).main()
+            changeck(key, port)
+            #JDMemberCloseAccount(int(port)).main()
+            runmain()
         else:
             print("请确认[multi.type]配置是否正确")
 
@@ -220,6 +225,42 @@ def runcmdlinux(cmd):
     for i in user_list:
         u_info = i.split(':')
         print("username is {} uid is ".format(u_info[0], u_info[2]))
+
+def close_process( process_name):
+    """Close a process by process name."""
+    if process_name[-4:].lower() != ".exe":
+        process_name += ".exe"
+    os.system("taskkill /f /im " + process_name)
+
+def closeallchrome():
+    global systype
+
+    if (systype == 'Windows'):
+        close_process("chrome.exe")
+    else:
+        if(systype == 'Linux'):
+            runcmdlinux("mykill chrome")
+        else:
+            print('其他')
+
+
+def runmain():
+    global systype
+    import subprocess
+
+    fpath = os.path.split(__file__)[0]
+    child = subprocess.Popen("python3 " + fpath + "/main.py")
+    child.wait()
+    return
+
+    if (systype == 'Windows'):
+        os.system("python3 main.py")
+    else:
+        if(systype == 'Linux'):
+            runcmdlinux("python3 main.py")
+        else:
+            print('其他')
+
 
 def wskeyrun(i = 0):
     global sv, st, uuid, sign
@@ -242,7 +283,7 @@ def wskeyrun(i = 0):
 
     wskeylist = []
     portlist = []
-    for i in range(100):
+    for i in range(10):
         try:
             wskeylist.append(get_config()["multi"]["key" + str(i + 1)])
             portlist.append(get_config()["multi"]["port" + str(i + 1)])
@@ -266,32 +307,24 @@ def wskeyrun(i = 0):
         if threadislive == 0:
             break
 
-
-    import platform
-    print(platform.system())
-
-    if (platform.system() == 'Windows'):
-        print('Windows系统')
-    else:
-        if(platform.system() == 'Linux'):
-            print('Linux系统')
-            runcmdlinux("mykill chrome")
-        else:
-            print('其他')
+    closeallchrome()
 
 
 
 if __name__ == '__main__':
     cookie_all = []
 
+    global systype
+    systype = platform.system()
+    closeallchrome()
     print("\n开启自动退会功能\n")
 
     # 启动一次立即执行
     wskeyrun(1)
 
     # 定时自动退会相关
-    if get_config()["cron"]["auto"]:
-        cron = get_config()["cron"]["cron"]
+    if get_config()["main"]["auto"]:
+        cron = get_config()["main"]["cron"]
         if len(cron.split(" ")) != 5:
             print("cron.cron 定时设置错误，必须为5位")
         from apscheduler.schedulers.blocking import BlockingScheduler

@@ -55,7 +55,7 @@ class JDMemberCloseAccount(object):
     京东全自动退店铺会员
     """
 
-    def __init__(self, port = 5201):
+    def __init__(self):
         INFO("欢迎执行JD全自动退会程序，如有使用问题请加TG群https://t.me/jdMemberCloseAccount进行讨论")
         INFO("↓  " * 30)
 
@@ -85,7 +85,7 @@ class JDMemberCloseAccount(object):
         if not self.sms_captcha_cfg["is_ocr"]:
             if not self.sms_captcha_cfg["jd_wstool"]:
                 from utils.listener import SmsSocket
-                self.sms = SmsSocket(port)
+                self.sms = SmsSocket(get_config()["main"]["smsport"])
         elif self.sms_captcha_cfg["is_ocr"]:
             self.ocr_type = self.ocr_cfg["type"]
             if self.ocr_type == "":
