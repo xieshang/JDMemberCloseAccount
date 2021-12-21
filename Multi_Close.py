@@ -219,14 +219,14 @@ def runByPort(keylist, port, multitype):
             return_ws = getToken(key)
             if return_ws[0]:
                 changeck(return_ws[1], port)
-                JDMemberCloseAccount().main()
-                #runmain()
+                # JDMemberCloseAccount().main()
+                runmain()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
             changeck(key, port)
-            JDMemberCloseAccount().main()
-            #runmain()
+            # JDMemberCloseAccount().main()
+            runmain()
         else:
             print("请确认[multi.type]配置是否正确")
 
