@@ -204,9 +204,9 @@ def runmain():
     res = res.read()
     f = open("./runmain.bat", "w", encoding='UTF-8')
     if 'python'.upper() in res.upper():
-        f.write('start cmd /C python ' + os.path.split(__file__)[0] + '/main.py')
+        f.write('start /wait cmd /C python ' + os.path.split(__file__)[0] + '/main.py')
     else:
-        f.write('start cmd /C python3 ' + os.path.split(__file__)[0] + '/main.py')
+        f.write('start /wait cmd /C python3 ' + os.path.split(__file__)[0] + '/main.py')
     f.close()
     os.system(os.path.split(__file__)[0] + '/runmain.bat')
 
