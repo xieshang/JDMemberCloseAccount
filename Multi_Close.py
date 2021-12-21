@@ -219,20 +219,20 @@ def runByPort(keylist, port, multitype):
             return_ws = getToken(key)
             if return_ws[0]:
                 changeck(return_ws[1], port)
-                # JDMemberCloseAccount().main()
-                runmain()
+                JDMemberCloseAccount().main()
+                #runmain()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
             changeck(key, port)
-            # JDMemberCloseAccount().main()
-            runmain()
+            JDMemberCloseAccount().main()
+            #runmain()
         else:
             print("请确认[multi.type]配置是否正确")
 
 def runcmdlinux(cmd):
-    import commands
-    user_str = commands.getoutput(cmd)
+    import subprocess
+    user_str = subprocess.getoutput(cmd)
     user_list = user_str.splitlines()  # 列表形式分隔文件内容(默认按行分隔)
     for i in user_list:
         u_info = i.split(':')
