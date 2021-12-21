@@ -169,7 +169,7 @@ def appjmp(wskey, tokenKey):
 
 
 def changeck(ck, port):
-    with open("./config.yaml","r",encoding='UTF-8') as f:
+    with open("./config.yaml", "r", encoding='UTF-8') as f:
 
         res_str = ''
         for line in f.readlines():
@@ -179,7 +179,7 @@ def changeck(ck, port):
                 line = line.split('"')[0] + '"' + str(port) + '"' + line.split('"')[2]
             res_str += line
 
-    f = open("./config.yaml","w",encoding='UTF-8')
+    f = open("./config.yaml", "w", encoding='UTF-8')
     f.write(res_str)
     f.close()
 
@@ -197,6 +197,16 @@ def loadWskeyConfig(wsk_config):
     return wskeylist, portlist
 
 
+
+
+def runmain():
+    res = os.popen("python --version")
+    res = res.read()
+    if 'python'.upper() in res.upper():
+        os.system('python ' + os.path.split(__file__)[0] + '/main.py')
+    else:
+        os.system('python3 ' + os.path.split(__file__)[0] + '/main.py')
+
 def runByPort(keylist, port, multitype):
     keys = keylist.split("&")
     for key in keys:
@@ -206,12 +216,13 @@ def runByPort(keylist, port, multitype):
             return_ws = getToken(key)
             if return_ws[0]:
                 changeck(return_ws[1], port)
-                JDMemberCloseAccount().main()
+                # JDMemberCloseAccount().main()
+                runmain()
             else:
                 print("wskey转cookie失败")
         elif multitype == "cookie":
             changeck(key, port)
-            JDMemberCloseAccount().main()
+            # JDMemberCloseAccount().main()
             runmain()
         else:
             print("请确认[multi.type]配置是否正确")
