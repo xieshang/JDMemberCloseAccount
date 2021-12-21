@@ -284,7 +284,7 @@ def wskeyrun(i = 0):
     for i in range(len(portlist)):
         threadlist.append(threading.Thread(target=runByPort, args= (wskeylist[i], portlist[i], multi_type)))
         threadlist[len(threadlist) - 1].start()
-        time.sleep(30)  # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
+        time.sleep(60)  # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 
     for i in range(len(threadlist)):
         threadlist[i].join()
