@@ -23,17 +23,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-async def ws_conn(ws_conn_url, ws_timeout):
-    """
-    websocket连接
-    """
-    async with websockets.legacy.client.connect(ws_conn_url, compression=None) as websocket:
-        try:
-            recv = await asyncio.wait_for(websocket.recv(), ws_timeout)
-            return recv
-        except asyncio.TimeoutError:
-            return ""
-
 
 logger = Log().logger
 
@@ -304,6 +293,17 @@ class JDMemberCloseAccount(object):
             self.ERROR(ret)
             return False
 
+    async def ws_conn(ws_conn_url, ws_timeout):
+        """
+        websocket连接
+        """
+        async with websockets.legacy.client.connect(ws_conn_url, compression=None) as websocket:
+            try:
+                recv = await asyncio.wait_for(websocket.recv(), ws_timeout)
+                return recv
+            except asyncio.TimeoutError:
+                return ""
+
     def close_member(self, card, flag=0):
         """
         进行具体店铺注销页面的注销操作
@@ -384,13 +384,13 @@ class JDMemberCloseAccount(object):
         else:
             try:
                 if self.sms_captcha_cfg["jd_wstool"]:
-                    recv = asyncio.get_event_loop().run_until_complete(ws_conn(self.ws_conn_url, self.ws_timeout))
+                    recv = asyncio.get_event_loop().run_until_complete(self.ws_conn(self.ws_conn_url, self.ws_timeout))
                 else:
                     recv = self.sms.get_code()
 
                 if recv == "":
                     self.INFO("等待websocket推送短信验证码超时，即将跳过", card["brandName"])
-                    record_black_list(card)
+                    self.record_black_list(card)
                     return False
                 else:
                     sms_code = json.loads(recv)["sms_code"]
