@@ -116,7 +116,7 @@ def closeAllChrome():
 
 
 def Multi_Close():
-    multi_enable = get_config()["multi"]["multi"]
+    multi_enable = get_config()["multi"]["multi_enable"]
 
     if not multi_enable:
         JDMemberCloseAccount().main()
