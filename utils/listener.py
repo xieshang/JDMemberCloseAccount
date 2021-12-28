@@ -84,6 +84,9 @@ class SmsSocket:
         except FunctionTimedOut:
             return ""
 
+    def clean_code(self):
+        cs, ca = self.tcp_server.accept()
+
 
 if __name__ == '__main__':
     a = SmsSocket()

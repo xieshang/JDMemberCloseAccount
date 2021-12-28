@@ -526,9 +526,13 @@ class JDMemberCloseAccount(object):
                     return False
 
         # 解绑成功页面
-        self.wait_check.until(EC.presence_of_element_located(
-            (By.XPATH, "//div[text()='解绑会员成功']")
-        ), f'解绑失败，黑店【{card["brandName"]}】跳过')
+        try:
+            self.wait_check.until(EC.presence_of_element_located(
+                (By.XPATH, "//div[text()='解绑会员成功']")
+            ), f'解绑失败，黑店【{card["brandName"]}】跳过')
+        except:
+            sms_t = self.sms.get_code()
+            print("可能是验证码时序没对上，丢弃一次验证码:" + sms_t)
 
         time.sleep(1)
         self.member_close_count += 1
