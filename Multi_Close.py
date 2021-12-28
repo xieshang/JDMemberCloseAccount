@@ -54,18 +54,17 @@ def runMain():
             JDMemberCloseAccount().main()
 
 
-def runByPort(keylist, port, multitype):
+def runByPort(keylist, port):
     """
     根据端口运行主代码
     :param keylist:
     :param port:
-    :param multitype:
     :return:
     """
     keys = keylist.split("&")
     for key in keys:
         pin = key.split(";")[0]
-        if multitype == "wskey":
+        if "wskey" in key:
             print("转化wskey:" + pin + "\n")
             return_ws = getToken(key)
             if return_ws[0]:
@@ -118,7 +117,6 @@ def closeAllChrome():
 
 def Multi_Close():
     multi_enable = get_config()["multi"]["multi"]
-    multi_type = get_config()["multi"]["type"]
 
     if not multi_enable:
         JDMemberCloseAccount().main()
@@ -137,7 +135,7 @@ def Multi_Close():
     # 根据port设置创建启动进程
     thread_list = []
     for i in range(len(port_list)):
-        thread_list.append(threading.Thread(target=runByPort, args=(key_list[i], port_list[i], multi_type)))
+        thread_list.append(threading.Thread(target=runByPort, args=(key_list[i], port_list[i])))
         thread_list[len(thread_list) - 1].start()
         time.sleep(60)  # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 

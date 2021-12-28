@@ -20,7 +20,6 @@ main:
 # multi.portX: 对应wskeyX或cookieX使用的端口号，
 multi:
   multi: false
-  type: "wskey"
   key1: ""
   port1: 5211
   key2: ""
