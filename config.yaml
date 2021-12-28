@@ -8,7 +8,7 @@ debug: false
 # main.cron: 定时时间设置，按 "分 时 日 月 年" 设置，13 10 */2 * * 表示每2天10时13分启动退会
 main:
   smsport: "5201"
-  auto: true
+  cron_enable: true
   cron: "30 9 * * *"
 
 
@@ -19,7 +19,7 @@ main:
 #             一个端口对应多个账号请使用&隔开： [wsk1]&[wsk2]&[wsk3]
 # multi.portX: 对应wskeyX或cookieX使用的端口号，
 multi:
-  multi: false
+  multi_enable: true
   key1: ""
   port1: 5211
   key2: ""
