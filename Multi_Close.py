@@ -159,7 +159,7 @@ if __name__ == '__main__':
     Multi_Close()
 
     # 定时自动退会相关
-    if get_config()["main"]["auto"]:
+    if get_config()["main"]["cron_enable"]:
         cron = get_config()["main"]["cron"]
         if len(cron.split(" ")) != 5:
             print("cron.cron 定时设置错误，必须为5位")
