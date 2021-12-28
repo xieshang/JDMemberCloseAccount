@@ -71,6 +71,9 @@ def runByPort(keylist, port):
                 key = return_ws[1]
             else:
                 print("wskey转cookie失败")
+        else:
+            if "pt_key" not in key:
+                return
         changeConfigFileByKey(key, port)
         runMain()
 

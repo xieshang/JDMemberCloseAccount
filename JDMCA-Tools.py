@@ -46,9 +46,9 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
 
     def init(self):
         config = yaml.safe_load(open(get_file("config.yaml"), 'r', encoding='utf-8'))
-        self.Chk_Auto.setChecked(config["main"]["auto"])
+        self.Chk_Auto.setChecked(config["main"]["cron_enable"])
         self.Txt_Cookie.setPlainText(config["cookie"])
-        self.Chk_Muilt.setChecked(config["multi"]["multi"])
+        self.Chk_Muilt.setChecked(config["multi"]["multi_enable"])
         self.Chk_LocalMsg.setChecked(1 - config["sms_captcha"]["jd_wstool"])
         self.Chk_CloudID.setChecked(config["shop"]["add_remote_shop_data"])
         self.Chk_Headless.setChecked(config["selenium"]["headless"])
@@ -67,9 +67,9 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
 
     def saveconfig(self):
         config = yaml.safe_load(open(get_file("config.yaml"), 'r', encoding='utf-8'))
-        config["main"]["auto"] = self.Chk_Auto.isChecked()
+        config["main"]["cron_enable"] = self.Chk_Auto.isChecked()
         config["cookie"] = self.Txt_Cookie.toPlainText()
-        config["multi"]["multi"] = self.Chk_Muilt.isChecked()
+        config["multi"]["multi_enable"] = self.Chk_Muilt.isChecked()
         config["sms_captcha"]["jd_wstool"] = bool(1 - self.Chk_LocalMsg.isChecked())
         config["shop"]["add_remote_shop_data"] = self.Chk_CloudID.isChecked()
         config["selenium"]["headless"] = self.Chk_Headless.isChecked()
