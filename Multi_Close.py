@@ -22,7 +22,7 @@ def changeConfigFileByKey(ck, port):
             if 'cookie:' in line:
                 line = 'cookie: "' + ck + '"\n'
             if 'smsport' in line:
-                line = line.split('"')[0] + '"' + str(port) + '"' + line.split('"')[2]
+                line = line.split(':')[0] + ': ' + str(port) + '\n'
             res_str += line
 
     f = open("./config.yaml", "w", encoding='UTF-8')
