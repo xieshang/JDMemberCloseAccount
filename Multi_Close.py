@@ -41,7 +41,7 @@ def runMain():
         res = os.popen("python --version")
         res = res.read()
         f = open("./runmain.bat", "w", encoding='UTF-8')
-        if 'python'.upper() in res.upper():
+        if 'python 3'.upper() in res.upper():
             f.write('start /wait cmd /C python ' + 'main.py')
         else:
             f.write('start /wait cmd /C python3 ' + 'main.py')
