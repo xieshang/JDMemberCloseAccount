@@ -17,12 +17,22 @@ mirror_dic = {
 
 
 def excuteCommand(com):
-    ex = subprocess.Popen(com, stdout=subprocess.PIPE, shell=True)
-    out, err = ex.communicate()
-    status = ex.wait()
+    # ex = subprocess.Popen(com, stdout=subprocess.PIPE, shell=True)
+    # out, err = ex.communicate()
+    # status = ex.wait()
+    # print("cmd out: ", out.decode())
+    # return out.decode()
+
     print("cmd in:", com)
-    print("cmd out: ", out.decode())
-    return out.decode()
+    res = ''
+    p = subprocess.Popen(com, stdout=subprocess.PIPE, bufsize=1)
+    for line in iter(p.stdout.readline, b''):
+        line = str(line)
+        res += line
+        print(line)
+    p.stdout.close()
+    p.wait()
+    return res
 
 
 class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
@@ -47,22 +57,32 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.Btn_unInstallPip.clicked.connect(self.Btn_unInstallPip_Clicked)
         self.Btn_InstallPip_One.clicked.connect(self.Btn_InstallPip_One_Clicked)
         self.Btn_downchromedriver.clicked.connect(self.Btn_downchromedriver_Clicked)
-        self.setWindowTitle("退会辅助工具 V0.0.3")
+        self.Btn_unInstallPip_One.clicked.connect(self.Btn_unInstallPip_One_Clicked)
+        self.setWindowTitle("退会辅助工具 V0.0.4")
         self.init()
+        self.GetPythonCmd()
 
     def Btn_downchromedriver_Clicked(self):
         check_driver_version(".\drivers\chromedriver.exe")
 
+    def Btn_unInstallPip_One_Clicked(self):
+        cmd = '' + self.pipcmd + ' uninstall ' + self.Txt_ModuleName.text() + " -y"
+        excuteCommand(cmd)
+        res = excuteCommand(self.pipcmd + " list")
+        modulename = self.Txt_ModuleName.text().split("=")[0].replace("~", "").replace(">", "").replace("<", "").upper()
+        if modulename not in res:
+            QMessageBox.information(self, '提示', "卸载{}成功".format(self.Txt_ModuleName.text()))
+
     def Btn_InstallPip_One_Clicked(self):
-        cmd = '' + self.pipcmd + ' install -i ' + mirror_dic[self.Combox_mirror.currentText()] + " " +\
-              self.Txt_ModuleName.text() + "\r\npause"
+        cmd = '' + self.pipcmd + ' install -i ' + mirror_dic[self.Combox_mirror.currentText()] + " " + \
+              self.Txt_ModuleName.text()
         excuteCommand(cmd)
         res = excuteCommand(self.pipcmd + " list")
         modulename = self.Txt_ModuleName.text().split("=")[0].replace("~", "").replace(">", "").replace("<", "").upper()
         if modulename in res.upper():
             QMessageBox.information(self, '提示', "安装{}成功".format(self.Txt_ModuleName.text()))
         else:
-            if modulename.replace("_","-") in res.upper():
+            if modulename.replace("_", "-") in res.upper():
                 QMessageBox.information(self, '提示', "安装{}成功".format(self.Txt_ModuleName.text()))
             else:
                 QMessageBox.warning(self, '提示', "依赖安装好像有问题。。。")
@@ -74,19 +94,36 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         return 'opencv-python'.upper() in res.upper()
 
     def Btn_InstallPip_Clicked(self):
+        if self.CheckModuleState():
+            return
+
         print('升级pip')
         excuteCommand('' + self.pythoncmd + ' -m pip install --upgrade pip')
-        print('安装依赖')
         print("选择源:" + self.Combox_mirror.currentText())
+
+        print('判断torch')
+        res = excuteCommand(self.pipcmd + ' list')
+        if 'torch'.upper() not in res.upper():
+            print('尝试安装torch')
+            cmd = ( self.pipcmd + ' install torch -f https://download.pytorch.org/whl/cu102/torch_stable.html')
+            excuteCommand(cmd)
+            res = excuteCommand(self.pipcmd + ' list')
+            if 'torch'.upper() not in res.upper():
+                QMessageBox.information(self, '提示', "torch安装失败，python是64位吗？\r\n如果不行，就把python卸了让我来安装吧！\r\n"
+                                                    "卸载后记得清理一下系统环境path哦！")
+                return
+
         cmd = ('' + self.pipcmd + ' install  -i ' + mirror_dic[self.Combox_mirror.currentText()] +
-               ' torch requests~=2.25.1 PyYAML~=5.4.1 psutil~=5.8.0 selenium~=3.141.0 easyocr~=1.3.2 Pillow~=8.2.0 '
-               'urllib3~=1.26.5 baidu-aip==2.2.18.0 websockets~=9.1 opencv_python~=4.5.2.54 '
+               ' requests~=2.25.1 PyYAML~=5.4.1 psutil~=5.8.0 selenium~=3.141.0 easyocr~=1.3.2 Pillow~=8.2.0 '
+               'urllib3~=1.26.5 baidu-aip==2.2.18.0 websockets opencv_python~=4.5.2.54 '
                'func-timeout~=4.3.5 msedge-selenium-tools~=3.141.3 numpy~=1.19.5')
         excuteCommand(cmd)
         if self.CheckModuleState():
             QMessageBox.information(self, '提示', "安装opencv-python成功，其他依赖应该也OK了")
+            return True
         else:
             QMessageBox.warning(self, '提示', "依赖安装好像有问题。。。")
+            return False
 
     def Btn_unInstallPip_Clicked(self):
         cmd = ('' + self.pipcmd + ' uninstall -y opencv_python')
@@ -133,7 +170,6 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.Chk_Headless.setChecked(config["selenium"]["headless"])
 
         self.Chk_Muilt_Clicked()
-        self.GetPythonCmd()
         pass
 
     def GetPythonCmd(self):
@@ -163,14 +199,25 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             res = res.read()
             if 'python 3'.upper() in res.upper():
                 self.pipcmd = 'pip3'
-
         errmsg = ''
+        errtype = 0
         if self.pythoncmd == '':
             errmsg += '请安装python3.6~3.9版本\n'
-        if self.pipcmd == '':
-            errmsg += '请安装pip3\n'
+            errtype = 1
+        if self.pipcmd == '' and errtype == 0:
+            errmsg += '请安装pip\n'
+            errtype = 2
+
         if errmsg != '':
-            QMessageBox.warning(self, '错误', errmsg)
+            if errtype == 2:
+                btn = QMessageBox.information(self, '错误', errmsg)
+            else:
+                btn = QMessageBox.information(self, '错误', errmsg + "是否启动自动安装python？",
+                                              QMessageBox.Ok | QMessageBox.Cancel)
+            if btn == QMessageBox.Ok:
+                from utils.installpython import installPython
+            installPython()
+            QMessageBox.information(self, "警告", "安装完成后重新运行一下本程序。")
             sys.exit()
 
     def saveconfig(self):
@@ -211,19 +258,25 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         print(os.path.exists("./config.yaml.bak1"))
         if os.path.exists("./config.yaml.bak1") == False:
             from shutil import copy
-            copy("./config.yaml", "./config.yaml.bak1")
+            print("备份原始config.yaml")
+            copy("config.yaml", "config.yaml.bak1")
         # 保存配置
+        print("保存配置到config.yaml")
         self.saveconfig()
 
+        print("检测python环境")
+        self.GetPythonCmd()
+
+        print("检测依赖是否正常")
         if not self.CheckModuleState():
-            self.Btn_InstallPip_Clicked()
+            print("依赖不正常，进行自动安装")
+            if not self.Btn_InstallPip_Clicked():
+                return
 
         # 检测并下载chromedriver
         check_driver_version(".\drivers\chromedriver.exe")
         import threading
         threading.Thread(target=self.run_cmd_thread).start()
-
-
 
     def run_cmd_thread(self):
         # 启动进程

@@ -142,16 +142,16 @@
     </property>
    </column>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>525</y>
-     <width>353</width>
+     <x>11</x>
+     <y>521</y>
+     <width>324</width>
      <height>25</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
      <widget class="QPushButton" name="Btn_InstallPip">
       <property name="text">
@@ -184,28 +184,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="Txt_ModuleName"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="Btn_InstallPip_One">
-      <property name="text">
-       <string>安装</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>555</y>
-     <width>187</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
      <widget class="QPushButton" name="Btn_unInstallPip">
       <property name="text">
        <string>卸载依赖</string>
@@ -216,6 +194,42 @@
      <widget class="QPushButton" name="Btn_downchromedriver">
       <property name="text">
        <string>下载chromedriver</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>550</y>
+     <width>363</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>单独依赖：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="Txt_ModuleName"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Btn_InstallPip_One">
+      <property name="text">
+       <string>安装</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Btn_unInstallPip_One">
+      <property name="text">
+       <string>卸载</string>
       </property>
      </widget>
     </item>
