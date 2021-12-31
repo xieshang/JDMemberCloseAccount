@@ -273,8 +273,11 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             if not self.Btn_InstallPip_Clicked():
                 return
 
-        # 检测并下载chromedriver
-        check_driver_version(".\drivers\chromedriver.exe")
+        if self.Chk_Xiaobai.isChecked():
+            # 检测并下载chromedriver
+            if not check_driver_version(".\drivers\chromedriver.exe"):
+                QMessageBox.information(self, '错误', 'chrome检测错误，请确认是否安装了chrome？不要用绿色版。')
+
         import threading
         threading.Thread(target=self.run_cmd_thread).start()
 
