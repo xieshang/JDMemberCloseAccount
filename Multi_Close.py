@@ -11,7 +11,7 @@ from utils.config import get_config
 from utils.wskToCk import getToken
 from main import JDMemberCloseAccount
 
-sys_type = ""
+sys_type = platform.system()
 
 
 def changeConfigFileByKey(ck, port):
@@ -75,7 +75,8 @@ def runByPort(keylist, port):
             if "pt_key" not in key:
                 return
         changeConfigFileByKey(key, port)
-        runMain()
+        JDMemberCloseAccount().main()
+        # runMain()
 
 
 def runcmdlinux(cmd):
@@ -108,14 +109,17 @@ def closeAllChrome():
     关闭所有chrome浏览器
     :return:
     """
-
-    if sys_type == 'Windows':
-        close_process("chrome.exe")
-    else:
-        if sys_type == 'Linux':
-            runcmdlinux("mykill chrome")
+    print("关闭chrome进程")
+    try:
+        if sys_type == 'Windows':
+            close_process("chrome.exe")
         else:
-            print('其他')
+            if sys_type == 'Linux':
+                runcmdlinux("mykill chrome")
+            else:
+                print('其他')
+    except:
+        print("关闭进程有错误")
 
 
 def Multi_Close():
@@ -148,10 +152,7 @@ def Multi_Close():
     closeAllChrome()
 
 
-if __name__ == '__main__':
-    cookie_all = []
-
-    sys_type = platform.system()
+def Run():
     closeAllChrome()
     print("\n开启自动退会功能\n")
 
@@ -169,3 +170,6 @@ if __name__ == '__main__':
         scheduler = BlockingScheduler(timezone='Asia/Shanghai')
         scheduler.add_job(Multi_Close, CronTrigger.from_crontab(cron))
         scheduler.start()
+
+if __name__ == '__main__':
+    Run()

@@ -50,6 +50,14 @@ class JDMemberCloseAccount(object):
             s += item
         logger.error("".join(self.pinname + " >> " + s))
 
+
+    def SUCC(self, *args):
+        s = ''
+        for item in list(map(str, args)):
+            s += item
+        logger.debug("".join("--SUCC--" + self.pinname + " >> " + s))
+
+
     def __init__(self):
         self.pinname = ''
         self.INFO("欢迎执行JD全自动退会程序，如有使用问题请加TG群https://t.me/jdMemberCloseAccount进行讨论")
@@ -349,10 +357,15 @@ class JDMemberCloseAccount(object):
             (By.XPATH, "//button[text()='发送验证码']")
         ), "发送短信验证码超时 " + card["brandName"]).click()
 
-        # 判断是否发送成功，发送失败为黑店，直接跳过
-        self.wait_check.until(EC.presence_of_element_located(
-            (By.XPATH, "//div[text()='发送成功']")
-        ), f'发送失败，黑店【{card["brandName"]}】跳过')
+        try:
+            # 判断是否发送成功，发送失败为黑店，直接跳过
+            self.wait_check.until(EC.presence_of_element_located(
+                (By.XPATH, "//div[text()='发送成功']")
+            ), f'发送失败，黑店【{card["brandName"]}】跳过')
+        except:
+            self.record_black_list(card)
+            self.ERROR(F'发送失败，黑店【{card["brandName"]}】跳过，并加入黑名单')
+            return False
 
         # 验证码
         sms_code = ""
@@ -532,14 +545,15 @@ class JDMemberCloseAccount(object):
             ), f'解绑失败，黑店【{card["brandName"]}】跳过')
         except:
             sms_t = self.sms.get_code()
-            print("可能是验证码时序没对上，丢弃一次验证码:" + sms_t)
+            self.ERROR("可能是验证码时序没对上，丢弃一次验证码:" + sms_t)
+            return False
 
         time.sleep(1)
         self.member_close_count += 1
         self.remove_black_list(card)
         if card["brandName"] in self.specify_shops:
             self.specify_shops.remove(card["brandName"])
-        self.INFO("👌 本次运行已成功注销店铺会员数量为：", self.member_close_count)
+        self.SUCC("👌 本次运行已成功注销店铺会员数量为：", self.member_close_count)
         return True
 
     def record_black_list(self, card):
@@ -661,7 +675,7 @@ class JDMemberCloseAccount(object):
                 wait_refresh_time = self.shop_cfg["wait_refresh_time"]
                 loop_for_wait_time = int(wait_refresh_time * 60)
                 while loop_for_wait_time:
-                    print("\r[%s] [INFO] 挂载乱码店铺中(总时间为%s分钟)，页面还需等待: %s秒" %
+                    self.INFO("\r[%s] [INFO] 挂载乱码店铺中(总时间为%s分钟)，页面还需等待: %s秒" %
                           (
                               time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
                               wait_refresh_time,
@@ -670,7 +684,7 @@ class JDMemberCloseAccount(object):
                     time.sleep(1)
                     loop_for_wait_time -= 1
 
-                print("\n[%s] [INFO] 开始刷新页面进行再次尝试乱码页面" %
+                self.INFO("\n[%s] [INFO] 开始刷新页面进行再次尝试乱码页面" %
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 now_handle = self.browser.current_window_handle
                 for handles in self.browser.window_handles:

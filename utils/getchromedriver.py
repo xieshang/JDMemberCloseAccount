@@ -101,7 +101,7 @@ def check_driver_version(driverpath):
         driver_version = driver_version[:driver_version.rfind(".")]
     chrome_version = get_chrome_version()
     if not chrome_version:
-        print('没有按照chrome')
+        print('没有安装chrome')
         return False
     chrome_version = chrome_version[:chrome_version.rfind(".")]
     if driver_version != chrome_version:

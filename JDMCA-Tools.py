@@ -27,7 +27,10 @@ def excuteCommand(com):
     res = ''
     p = subprocess.Popen(com, stdout=subprocess.PIPE, bufsize=1)
     for line in iter(p.stdout.readline, b''):
-        line = str(line)
+        try:
+            line = line.decode()
+        except:
+            line = str(line)
         res += line
         print(line)
     p.stdout.close()
@@ -58,7 +61,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.Btn_InstallPip_One.clicked.connect(self.Btn_InstallPip_One_Clicked)
         self.Btn_downchromedriver.clicked.connect(self.Btn_downchromedriver_Clicked)
         self.Btn_unInstallPip_One.clicked.connect(self.Btn_unInstallPip_One_Clicked)
-        self.setWindowTitle("退会辅助工具 V0.0.4")
+        self.setWindowTitle("东东退会 2022-01-01")
         self.init()
         self.GetPythonCmd()
 
@@ -116,7 +119,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         cmd = ('' + self.pipcmd + ' install  -i ' + mirror_dic[self.Combox_mirror.currentText()] +
                ' requests~=2.25.1 PyYAML~=5.4.1 psutil~=5.8.0 selenium~=3.141.0 easyocr~=1.3.2 Pillow~=8.2.0 '
                'urllib3~=1.26.5 baidu-aip==2.2.18.0 websockets opencv_python~=4.5.2.54 '
-               'func-timeout~=4.3.5 msedge-selenium-tools~=3.141.3 numpy~=1.19.5')
+               'func-timeout~=4.3.5 msedge-selenium-tools~=3.141.3 numpy~=1.19.5 apscheduler')
         excuteCommand(cmd)
         if self.CheckModuleState():
             QMessageBox.information(self, '提示', "安装opencv-python成功，其他依赖应该也OK了")
@@ -282,12 +285,14 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         threading.Thread(target=self.run_cmd_thread).start()
 
     def run_cmd_thread(self):
+        import Multi_Close
+        Multi_Close.Run()
         # 启动进程
-        if self.Chk_Muilt.isEnabled():
-            pyscript = 'Multi_Close.py'
-        else:
-            pyscript = 'main.py'
-        excuteCommand(self.pythoncmd + ' ' + pyscript)
+        # if self.Chk_Muilt.isEnabled():
+            # pyscript = 'Multi_Close.py'
+        # else:
+            # pyscript = 'main.py'
+        # excuteCommand(self.pythoncmd + ' ' + pyscript)
 
 
 def get_file(file_name=""):
