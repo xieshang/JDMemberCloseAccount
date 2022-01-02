@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>673</width>
-    <height>585</height>
+    <height>724</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
    <property name="geometry">
     <rect>
      <x>537</x>
-     <y>527</y>
+     <y>327</y>
      <width>131</width>
      <height>51</height>
     </rect>
@@ -141,7 +141,7 @@
      <x>6</x>
      <y>127</y>
      <width>661</width>
-     <height>391</height>
+     <height>191</height>
     </rect>
    </property>
    <column>
@@ -159,7 +159,7 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>521</y>
+     <y>321</y>
      <width>324</width>
      <height>25</height>
     </rect>
@@ -216,7 +216,7 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>550</y>
+     <y>350</y>
      <width>363</width>
      <height>25</height>
     </rect>
@@ -247,6 +247,152 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>340</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QTabWidget" name="LogTab">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>380</y>
+     <width>671</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>7</number>
+   </property>
+   <widget class="QWidget" name="tab_1">
+    <attribute name="title">
+     <string>Tab 1</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_1">
+     <property name="geometry">
+      <rect>
+       <x>3</x>
+       <y>4</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>Tab 2</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_2">
+     <property name="geometry">
+      <rect>
+       <x>3</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_3">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_4">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_4">
+     <property name="geometry">
+      <rect>
+       <x>3</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_5">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_5">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_6">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_6">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_7">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_7">
+     <property name="geometry">
+      <rect>
+       <x>3</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_8">
+    <attribute name="title">
+     <string>页</string>
+    </attribute>
+    <widget class="QTextEdit" name="LogText_8">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>3</y>
+       <width>661</width>
+       <height>311</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <tabstops>

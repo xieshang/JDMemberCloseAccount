@@ -8,6 +8,8 @@ import urllib3
 
 from PIL import Image
 import websockets.legacy.client
+from PyQt5.QtCore import pyqtSignal, QThread
+
 from captcha.chaojiying import ChaoJiYing
 from captcha.tujian import TuJian
 from captcha.jd_captcha import JDcaptcha_base64
@@ -22,43 +24,49 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-
-
 logger = Log().logger
 
 
-class JDMemberCloseAccount(object):
+class JDMemberCloseAccount(QThread):
     """
     京东全自动退店铺会员
     """
+    logout = pyqtSignal(int, str, int, str)
+
+    def SUCC(self, *args):
+        s = ''
+        for item in list(map(str, args)):
+            s += item
+        if self.idx:
+            self.logout.emit(self.idx, self.pinname, 0, s)
+        logger.debug("".join("--SUCC--" + self.pinname + " >> " + s))
 
     def INFO(self, *args):
         s = ''
         for item in list(map(str, args)):
             s += item
+        if self.idx:
+            self.logout.emit(self.idx, self.pinname, 1, s)
         logger.info("".join(self.pinname + " >> " + s))
 
     def WARN(self, *args):
         s = ''
         for item in list(map(str, args)):
             s += item
+        if self.idx:
+            self.logout.emit(self.idx, self.pinname, 2, s)
         logger.warning("".join(self.pinname + " >> " + s))
 
     def ERROR(self, *args):
         s = ''
         for item in list(map(str, args)):
             s += item
+        if self.idx:
+            self.logout.emit(self.idx, self.pinname, 3, s)
         logger.error("".join(self.pinname + " >> " + s))
 
-
-    def SUCC(self, *args):
-        s = ''
-        for item in list(map(str, args)):
-            s += item
-        logger.debug("".join("--SUCC--" + self.pinname + " >> " + s))
-
-
-    def __init__(self):
+    def init(self, idx=0):
+        self.idx = idx
         self.pinname = ''
         self.INFO("欢迎执行JD全自动退会程序，如有使用问题请加TG群https://t.me/jdMemberCloseAccount进行讨论")
         self.INFO("↓  " * 30)
@@ -609,7 +617,6 @@ class JDMemberCloseAccount(object):
             self.browser.close()
             return
 
-
         ck = str(self.config["cookie"]).split(";")
         for item in ck:
             if "pin" in item:
@@ -617,7 +624,6 @@ class JDMemberCloseAccount(object):
         if '%' in self.pinname:
             import urllib.parse
             self.pinname = urllib.parse.unquote(self.pinname)
-
 
         # 写入Cookie
         self.browser.delete_all_cookies()
@@ -676,16 +682,16 @@ class JDMemberCloseAccount(object):
                 loop_for_wait_time = int(wait_refresh_time * 60)
                 while loop_for_wait_time:
                     self.INFO("\r[%s] [INFO] 挂载乱码店铺中(总时间为%s分钟)，页面还需等待: %s秒" %
-                          (
-                              time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-                              wait_refresh_time,
-                              str(loop_for_wait_time)), end=''
-                          )
+                              (
+                                  time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                                  wait_refresh_time,
+                                  str(loop_for_wait_time)), end=''
+                              )
                     time.sleep(1)
                     loop_for_wait_time -= 1
 
                 self.INFO("\n[%s] [INFO] 开始刷新页面进行再次尝试乱码页面" %
-                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+                          time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 now_handle = self.browser.current_window_handle
                 for handles in self.browser.window_handles:
                     if now_handle != handles:
@@ -772,4 +778,6 @@ class JDMemberCloseAccount(object):
 
 
 if __name__ == '__main__':
-    JDMemberCloseAccount().main()
+    close = JDMemberCloseAccount()
+    close.init()
+    close.main()

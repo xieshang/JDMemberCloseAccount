@@ -39,9 +39,6 @@ def excuteCommand(com):
 
 
 class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
-    def Log_info(self, log):
-        self.logbox.setPlainText(self.logbox.toPlainText() + log + "\n")
-
     def __init__(self):
         super(JDMCA_Tools, self).__init__()
         self.setupUi(self)
@@ -52,8 +49,20 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.KeyTable.setColumnWidth(0, 80)
         self.KeyTable.setColumnWidth(1, 550)
         row_cnt = self.KeyTable.rowCount()
-        for i in range(12):
+        for i in range(8):
             self.KeyTable.insertRow(row_cnt)
+        for i in range(self.KeyTable.rowCount()):
+            self.KeyTable.setRowHeight(i, 8)
+
+        # 每个号的日志关联
+        self.logtext = [self.LogText_1] # 添加一个元素，方便代码自动联想
+        for i in range(self.KeyTable.rowCount()):
+            self.LogTab.setTabVisible(i, False)
+            # 将所有的logtext放到list里方便后面调用
+            if i == 0:
+                continue
+            self.logtext.append(eval('self.LogText_' + str(i)))
+
         self.Chk_Muilt.clicked.connect(self.Chk_Muilt_Clicked)
         self.Btn_Run.clicked.connect(self.Btn_Run_Clicked)
         self.Btn_InstallPip.clicked.connect(self.Btn_InstallPip_Clicked)
@@ -281,12 +290,21 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             if not check_driver_version(".\drivers\chromedriver.exe"):
                 QMessageBox.information(self, '错误', 'chrome检测错误，请确认是否安装了chrome？不要用绿色版。')
 
+        for i in range(self.LogTab.count()):
+            self.LogTab.setTabVisible(i, False)
+
         import threading
         threading.Thread(target=self.run_cmd_thread).start()
 
+    def logout(self, idx, infoleval, info):
+        self.LogTab.setTabVisible(idx - 1, True)
+        self.logtext[idx].append(info)
+
     def run_cmd_thread(self):
-        import Multi_Close
-        Multi_Close.Run()
+        from Multi_Close import Multi_Close
+        muti = Multi_Close()
+        muti.logout.connect(self.logout)
+        muti.Run()
         # 启动进程
         # if self.Chk_Muilt.isEnabled():
             # pyscript = 'Multi_Close.py'
