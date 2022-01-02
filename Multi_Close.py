@@ -64,12 +64,18 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.setMaximumSize(self.width(), self.height())
         self.setMinimumSize(self.width(), self.height())
         self.form_max_height = self.height()
-        self.KeyTable.setColumnWidth(0, 80)
-        self.KeyTable.setColumnWidth(1, 550)
+        self.KeyTable.setColumnWidth(0, 30)
+        self.KeyTable.setColumnWidth(1, 40)
+        self.KeyTable.setColumnWidth(2, 500)
         row_cnt = self.KeyTable.rowCount()
         for i in range(8):
             self.KeyTable.insertRow(row_cnt)
+
+        self.ChkEnable = []
         for i in range(self.KeyTable.rowCount()):
+            self.ChkEnable.append(QtWidgets.QTableWidgetItem())
+            self.ChkEnable[i].setCheckState(QtCore.Qt.Unchecked)  # 把checkBox设为未选中状态
+            self.KeyTable.setItem(i, 0, self.ChkEnable[i])  # 在(x,y)添加checkBox
             self.KeyTable.setRowHeight(i, 8)
 
         # 每个号的日志关联
@@ -83,16 +89,18 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
                 continue
             self.logtext.append(eval('self.LogText_' + str(i + 1)))
             self.logtabs.append(eval('self.tab_' + str(i + 1)))
+            self.logtext[i].setText("")
 
 
-        self.Chk_Muilt.clicked.connect(self.Chk_Muilt_Clicked)
+
+        # self.Chk_Muilt.clicked.connect(self.Chk_Muilt_Clicked)
         self.Btn_Run.clicked.connect(self.Btn_Run_Clicked)
         self.Btn_InstallPip.clicked.connect(self.Btn_InstallPip_Clicked)
         self.Btn_unInstallPip.clicked.connect(self.Btn_unInstallPip_Clicked)
         self.Btn_InstallPip_One.clicked.connect(self.Btn_InstallPip_One_Clicked)
         self.Btn_downchromedriver.clicked.connect(self.Btn_downchromedriver_Clicked)
         self.Btn_unInstallPip_One.clicked.connect(self.Btn_unInstallPip_One_Clicked)
-        self.setWindowTitle("东东退会 2022-01-01")
+        self.setWindowTitle("东东退会 2022-01-02 fix")
         self.init()
         self.GetPythonCmd()
 
@@ -188,8 +196,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             row_idx = 0
             for i in range(1, 10):
                 try:
-                    self.KeyTable.setItem(row_idx, 0, QTableWidgetItem(str(config["multi"]["port" + str(i)])))
-                    self.KeyTable.setItem(row_idx, 1, QTableWidgetItem(config["multi"]["key" + str(i)]))
+                    self.KeyTable.setItem(row_idx, 1, QTableWidgetItem(str(config["multi"]["port" + str(i)])))
+                    self.KeyTable.setItem(row_idx, 2, QTableWidgetItem(config["multi"]["key" + str(i)]))
                     row_idx += 1
                 except Exception as e:
                     print(str(e))
@@ -203,7 +211,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.Chk_CloudID.setChecked(config["shop"]["add_remote_shop_data"])
         self.Chk_Headless.setChecked(config["selenium"]["headless"])
 
-        self.Chk_Muilt_Clicked()
+        # self.Chk_Muilt_Clicked()
         pass
 
     def GetPythonCmd(self):
@@ -312,9 +320,6 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             if not check_driver_version(".\drivers\chromedriver.exe"):
                 QMessageBox.information(self, '错误', 'chrome检测错误，请确认是否安装了chrome？不要用绿色版。')
 
-        for i in range(self.LogTab.count()):
-            self.LogTab.setTabVisible(i, False)
-            self.LogTab.setTabText(i, "")
 
         import threading
         threading.Thread(target=self.Run).start()
@@ -323,6 +328,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         if self.LogTab.tabText(idx - 1) != pinname:
             self.LogTab.setTabVisible(idx - 1, True)
             self.LogTab.setTabText(idx - 1, pinname)
+        if self.OnlyShowErr.isChecked() and infoleval == 1:
+                return
         self.logtext[idx - 1].append(info)
 
     def changeConfigFileByKey(self, ck, port):
@@ -334,6 +341,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
                     line = 'cookie: "' + ck + '"\n'
                 if 'smsport' in line:
                     line = line.split(':')[0] + ': ' + str(port) + '\n'
+                if 'ws_conn_url' in line:
+                    line = '  ws_conn_url: "ws://localhost:{}/subscribe"\n'.format(str(port))
                 res_str += line
 
         f = open("./config.yaml", "w", encoding='UTF-8')
@@ -384,6 +393,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
                 if "pt_key" not in key:
                     return
             self.changeConfigFileByKey(key, port)
+            if not self.Chk_LocalMsg.isChecked():
+                os.popen(r"jd_wstool.exe -port " + str(port))
             close_task = JDMemberCloseAccount()
             close_task.logout.connect(self.logout)
             close_task.init(idx)
@@ -422,27 +433,44 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         try:
             if sys_type == 'Windows':
                 self.close_process("chrome.exe")
+                self.close_process("jd_wstool.exe")
             else:
                 if sys_type == 'Linux':
                     self.runcmdlinux("mykill chrome")
+                    self.runcmdlinux("mykill jd_wstool")
                 else:
                     print('其他')
         except:
             print("关闭进程有错误")
 
     def Multi_Close(self):
+
+        for i in range(self.LogTab.count()):
+            self.LogTab.setTabVisible(i, False)
+            self.LogTab.setTabText(i, "")
+            self.logtext[i].setText("")
+
         multi_enable = get_config()["multi"]["multi_enable"]
 
         if not multi_enable:
-            JDMemberCloseAccount().main()
+            self.changeConfigFileByKey(get_config()["cookie"], 5201)
+            if not self.Chk_LocalMsg.isChecked():
+                os.popen(r"jd_wstool.exe -port " + str(5201))
+            close_task = JDMemberCloseAccount()
+            close_task.logout.connect(self.logout)
+            close_task.init()
+            close_task.main()
             return
 
         succlen = 0
         thread_list = []
-
+        threadnum = 0
         for i in range(10):
             try:
-                if i != 0:
+                if self.ChkEnable[i].checkState() != QtCore.Qt.Checked:
+                    continue
+
+                if threadnum != 0:
                     time.sleep(60)  # 根据单个端口包含的swkey数量确认延时时间，保证修改config文件时不会冲突混乱
 
                 key = get_config()["multi"]["key" + str(i + 1)]
@@ -450,6 +478,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
                 if key != '' and port != '' and int(port):
                     thread_list.append(threading.Thread(target=self.runByPort, args=(i + 1, key, port)))
                     thread_list[len(thread_list) - 1].start()
+                    threadnum += 1
             except:
                 pass
 
@@ -465,18 +494,18 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         # 启动一次立即执行
         self.Multi_Close()
 
-        # # 定时自动退会相关
-        # if get_config()["main"]["cron_enable"]:
-        #     cron = get_config()["main"]["cron"]
-        #     if len(cron.split(" ")) != 5:
-        #         print("cron.cron 定时设置错误，必须为5位")
-        #         return
-        #     from apscheduler.schedulers.blocking import BlockingScheduler
-        #     from apscheduler.triggers.cron import CronTrigger
-        #     print("开启定时")
-        #     scheduler = BlockingScheduler(timezone='Asia/Shanghai')
-        #     scheduler.add_job(self.Multi_Close, CronTrigger.from_crontab(cron))
-        #     scheduler.start()
+        # 定时自动退会相关
+        if get_config()["main"]["cron_enable"]:
+            cron = get_config()["main"]["cron"]
+            if len(cron.split(" ")) != 5:
+                print("cron.cron 定时设置错误，必须为5位")
+                return
+            from apscheduler.schedulers.blocking import BlockingScheduler
+            from apscheduler.triggers.cron import CronTrigger
+            print("开启定时")
+            scheduler = BlockingScheduler(timezone='Asia/Shanghai')
+            scheduler.add_job(self.Multi_Close, CronTrigger.from_crontab(cron))
+            scheduler.start()
 
 
 def get_file(file_name=""):
