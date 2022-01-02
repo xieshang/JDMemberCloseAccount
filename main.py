@@ -309,7 +309,7 @@ class JDMemberCloseAccount(QThread):
             self.ERROR(ret)
             return False
 
-    async def ws_conn(ws_conn_url, ws_timeout):
+    async def ws_conn(self, ws_conn_url, ws_timeout):
         """
         websocket连接
         """
@@ -405,7 +405,13 @@ class JDMemberCloseAccount(QThread):
         else:
             try:
                 if self.sms_captcha_cfg["jd_wstool"]:
-                    recv = asyncio.get_event_loop().run_until_complete(self.ws_conn(self.ws_conn_url, self.ws_timeout))
+                    loop1 = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop1)
+                    loop = asyncio.get_event_loop()
+                    rul = self.ws_conn_url
+                    tout = self.ws_timeout
+                    recv = loop.run_until_complete(self.ws_conn(rul, tout))
+                    # recv = loop.run_until_complete(self.ws_conn(self.ws_conn_url, self.ws_timeout))
                 else:
                     recv = self.sms.get_code()
 
