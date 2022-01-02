@@ -146,6 +146,11 @@
    </property>
    <column>
     <property name="text">
+     <string>运行</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
      <string>端口</string>
     </property>
    </column>
@@ -248,19 +253,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>440</x>
-     <y>340</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>PushButton</string>
-   </property>
-  </widget>
   <widget class="QTabWidget" name="LogTab">
    <property name="geometry">
     <rect>
@@ -271,7 +263,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>7</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab_1">
     <attribute name="title">
@@ -290,7 +282,7 @@
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
-     <string>Tab 2</string>
+     <string>2</string>
     </attribute>
     <widget class="QTextEdit" name="LogText_2">
      <property name="geometry">
@@ -393,6 +385,19 @@
      </property>
     </widget>
    </widget>
+  </widget>
+  <widget class="QCheckBox" name="OnlyShowErr">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>380</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>只显示重要的信息</string>
+   </property>
   </widget>
  </widget>
  <tabstops>
