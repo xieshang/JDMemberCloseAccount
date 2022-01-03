@@ -14,15 +14,18 @@ import (
 )
 
 var port string
+var Version = "0.1.1"
 
-
-func init() {
-    flag.StringVar(&port,"port","5201","listen port")
-}
 
 
 func main() {
-	flag.Parse()//暂停获取参数
+    flag.StringVar(&port,"port","5201","listen port")
+    versionFlag := flag.Bool("version", false, "print the version")
+	flag.Parse() //暂停获取参数
+    if *versionFlag {
+        info("Version: %s", Version)
+        os.Exit(0)
+    }
     println(port)
 	err := Run()
 	if err != nil {
