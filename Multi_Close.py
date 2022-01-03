@@ -4,16 +4,10 @@ cron: 15 2 * * * wskey.py
 new Env('wskey转换');
 '''
 import threading
-import os
 import platform
 import time
-
-from PyQt5.QtCore import pyqtSignal, QThread
-
-from utils.config import get_config
 from utils.wskToCk import getToken
 from main import JDMemberCloseAccount
-
 import os
 import sys
 import yaml
@@ -24,6 +18,9 @@ from utils.config import get_config
 import subprocess
 from utils.getchromedriver import check_driver_version
 
+SoftTitle = "东东退会 2022-01-03"
+cfgVer = "2022-01-03"
+
 sys_type = platform.system()
 
 mirror_dic = {
@@ -33,6 +30,27 @@ mirror_dic = {
     "腾讯": "https://mirrors.cloud.tencent.com/pypi/simple"
 }
 
+def version(v1, v2):
+    """
+    :param v1: 第一个版本号
+    :param v2: 第二个版本号 两个版本号中只能包含数字和 "." 存在
+    :return: 0表示v1=v2， 1表示v1>v2 , -1表示v1<v2
+    """
+    lst_1 = v1.split('-')
+    lst_2 = v2.split('-')
+    c = 0
+    while True:
+        if c == len(lst_1) and c == len(lst_2):
+            return 0
+        if len(lst_1) == c:
+            lst_1.append(0)
+        if len(lst_2) == c:
+            lst_2.append(0)
+        if int(lst_1[c]) > int(lst_2[c]):
+            return 1
+        elif int(lst_1[c]) < int(lst_2[c]):
+            return -1
+        c += 1
 
 def excuteCommand(com):
     # ex = subprocess.Popen(com, stdout=subprocess.PIPE, shell=True)
@@ -100,7 +118,9 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.Btn_InstallPip_One.clicked.connect(self.Btn_InstallPip_One_Clicked)
         self.Btn_downchromedriver.clicked.connect(self.Btn_downchromedriver_Clicked)
         self.Btn_unInstallPip_One.clicked.connect(self.Btn_unInstallPip_One_Clicked)
-        self.setWindowTitle("东东退会 2022-01-02 fix")
+        global SoftTitle, cfgVer
+        self.setWindowTitle(SoftTitle)
+        self.cfgVer = cfgVer
         self.init()
         self.GetPythonCmd()
 
@@ -151,7 +171,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             excuteCommand(cmd)
             res = excuteCommand(self.pipcmd + ' list')
             if 'torch'.upper() not in res.upper():
-                QMessageBox.information(self, '提示', "torch安装失败，python是64位吗？\r\n如果不行，就把python卸了让我来安装吧！\r\n"
+                QMessageBox.information(self, '提示', "torch安装失败！把代理关了试试？\r\npython是64位吗？\r\n"
+                                                    "如果不行，就把python卸了让我来安装吧！\r\n"
                                                     "卸载后记得清理一下系统环境path哦！")
                 return
 
@@ -188,7 +209,26 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             self.KeyTable.setEnabled(False)
 
     def init(self):
+        if not os.path.exists("./config.yaml"):
+            QMessageBox.information(self, '错误', "没有找到config.yaml文件")
+            sys.exit()
+        if not os.path.exists("./yolov4/yolov4-tiny-custom.weights"):
+            QMessageBox.information(self, '错误', "未找到yolov4权重文件")
+            sys.exit()
+        if not os.path.exists("./drivers"):
+            print("没有drivers文件夹，新建一个")
+            os.makedirs("./drivers")
+
         config = yaml.safe_load(open(get_file("config.yaml"), 'r', encoding='utf-8'))
+        try:
+            if version(config["Version"], self.cfgVer) > 1:
+                QMessageBox.information(self, '错误', "config.yaml版本过低")
+                sys.exit()
+        except:
+            QMessageBox.information(self, '错误', "config.yaml版本过低")
+            sys.exit()
+            pass
+
         try:
             self.Chk_Auto.setChecked(config["main"]["cron_enable"])
             self.Chk_Muilt.setChecked(config["multi"]["multi_enable"])
@@ -200,7 +240,8 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
                     self.KeyTable.setItem(row_idx, 2, QTableWidgetItem(config["multi"]["key" + str(i)]))
                     row_idx += 1
                 except Exception as e:
-                    print(str(e))
+                    pass
+                    # print(str(e))
         except:
             self.Chk_Auto.setEnabled(False)
             self.Chk_Muilt.setEnabled(False)
@@ -334,7 +375,6 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
 
     def changeConfigFileByKey(self, ck, port):
         with open("./config.yaml", "r", encoding='UTF-8') as f:
-
             res_str = ''
             for line in f.readlines():
                 if 'cookie:' in line:
