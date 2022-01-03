@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>673</width>
-    <height>724</height>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
    <property name="geometry">
     <rect>
      <x>537</x>
-     <y>327</y>
+     <y>297</y>
      <width>131</width>
      <height>51</height>
     </rect>
@@ -33,7 +33,7 @@
      <x>6</x>
      <y>2</y>
      <width>661</width>
-     <height>121</height>
+     <height>91</height>
     </rect>
    </property>
    <property name="title">
@@ -50,16 +50,6 @@
     </property>
     <property name="text">
      <string>Cookie：</string>
-    </property>
-   </widget>
-   <widget class="QPlainTextEdit" name="Txt_Cookie">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>62</y>
-      <width>641</width>
-      <height>51</height>
-     </rect>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
@@ -134,12 +124,22 @@
      </item>
     </layout>
    </widget>
+   <widget class="QLineEdit" name="Txt_Cookie">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>641</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QTableWidget" name="KeyTable">
    <property name="geometry">
     <rect>
      <x>6</x>
-     <y>127</y>
+     <y>97</y>
      <width>661</width>
      <height>191</height>
     </rect>
@@ -164,7 +164,7 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>321</y>
+     <y>291</y>
      <width>324</width>
      <height>25</height>
     </rect>
@@ -221,7 +221,7 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>350</y>
+     <y>320</y>
      <width>363</width>
      <height>25</height>
     </rect>
@@ -257,7 +257,7 @@
    <property name="geometry">
     <rect>
      <x>1</x>
-     <y>380</y>
+     <y>350</y>
      <width>671</width>
      <height>341</height>
     </rect>
@@ -390,7 +390,7 @@
    <property name="geometry">
     <rect>
      <x>540</x>
-     <y>380</y>
+     <y>350</y>
      <width>131</width>
      <height>20</height>
     </rect>

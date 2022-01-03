@@ -6,13 +6,16 @@ new Env('wskey转换');
 import threading
 import platform
 import time
+
+import requests
+
 from utils.wskToCk import getToken
 from main import JDMemberCloseAccount
 import os
 import sys
 import yaml
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox, QLineEdit
 from JDMCA_Form import Ui_JDMCA
 from utils.config import get_config
 import subprocess
@@ -52,6 +55,21 @@ def version(v1, v2):
             return -1
         c += 1
 
+def downNewConfig():
+    """
+    下载最新的配置文件
+    :return:
+    """
+    if os.path.exists("./config.yaml"):
+        from shutil import copy
+        print("备份原始config.yaml")
+        copy("config.yaml", "config.yaml.bak1")
+    response = requests.get("https://gitee.com/xxsc/JDMemberCloseAccount/raw/%E5%A4%9A%E5%8F%B7%E5%90%8C%E9%80%80/config.yaml")
+    file = response.content
+    with open("./config.yaml", 'wb') as f:
+        f.write(file)
+    pass
+
 def excuteCommand(com):
     # ex = subprocess.Popen(com, stdout=subprocess.PIPE, shell=True)
     # out, err = ex.communicate()
@@ -82,6 +100,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         self.setMaximumSize(self.width(), self.height())
         self.setMinimumSize(self.width(), self.height())
         self.form_max_height = self.height()
+        self.Txt_Cookie.setEchoMode(QLineEdit.PasswordEchoOnEdit)
         self.KeyTable.setColumnWidth(0, 30)
         self.KeyTable.setColumnWidth(1, 40)
         self.KeyTable.setColumnWidth(2, 500)
@@ -210,8 +229,11 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
 
     def init(self):
         if not os.path.exists("./config.yaml"):
-            QMessageBox.information(self, '错误', "没有找到config.yaml文件")
-            sys.exit()
+            res = QMessageBox.information(self, '错误', "没有找到config.yaml文件，是否下载最新配置文件？",QMessageBox.Ok|QMessageBox.No)
+            if res == QMessageBox.Ok:
+                downNewConfig()
+            else:
+                sys.exit()
         if not os.path.exists("./yolov4/yolov4-tiny-custom.weights"):
             QMessageBox.information(self, '错误', "未找到yolov4权重文件")
             sys.exit()
@@ -222,12 +244,17 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         config = yaml.safe_load(open(get_file("config.yaml"), 'r', encoding='utf-8'))
         try:
             if version(config["Version"], self.cfgVer) > 1:
-                QMessageBox.information(self, '错误', "config.yaml版本过低")
-                sys.exit()
+                res = QMessageBox.information(self, '错误', "config.yaml版本过低，是否下载最新配置文件？",QMessageBox.Ok|QMessageBox.No)
+                if res == QMessageBox.Ok:
+                    downNewConfig()
+                else:
+                    sys.exit()
         except:
-            QMessageBox.information(self, '错误', "config.yaml版本过低")
-            sys.exit()
-            pass
+            res = QMessageBox.information(self, '错误', "config.yaml版本过低，是否下载最新配置文件？", QMessageBox.Ok | QMessageBox.No)
+            if res == QMessageBox.Ok:
+                downNewConfig()
+            else:
+                sys.exit()
 
         try:
             self.Chk_Auto.setChecked(config["main"]["cron_enable"])
@@ -247,7 +274,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
             self.Chk_Muilt.setEnabled(False)
             self.KeyTable.setEnabled(False)
 
-        self.Txt_Cookie.setPlainText(config["cookie"])
+        self.Txt_Cookie.setText(config["cookie"])
         self.Chk_LocalMsg.setChecked(1 - config["sms_captcha"]["jd_wstool"])
         self.Chk_CloudID.setChecked(config["shop"]["add_remote_shop_data"])
         self.Chk_Headless.setChecked(config["selenium"]["headless"])
@@ -324,7 +351,7 @@ class JDMCA_Tools(QtWidgets.QWidget, Ui_JDMCA):
         except:
             pass
 
-        config["cookie"] = self.Txt_Cookie.toPlainText()
+        config["cookie"] = self.Txt_Cookie.text()
         config["sms_captcha"]["jd_wstool"] = bool(1 - self.Chk_LocalMsg.isChecked())
         config["shop"]["add_remote_shop_data"] = self.Chk_CloudID.isChecked()
         config["selenium"]["headless"] = self.Chk_Headless.isChecked()
